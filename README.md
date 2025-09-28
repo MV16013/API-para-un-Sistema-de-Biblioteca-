@@ -1,6 +1,12 @@
 # API para un sistema de biblioteca
 Este repositorios tiene el objetivo de crear una API REST con Spring Boot para gestionar las operaciones de una biblioteca. Esto incluye el registro de libros y autores, así como la gestión de préstamos de libros para los socios, controlando el estado de los préstamos (activo, devuelto) y la disponibilidad de los libros.
 
+# Integrantes del proyecto de la materia de Programacion Orientada a Objetos
+- Cristian Alexander Avalos Vásquez (AV23037)
+- Luis Daniel Contreras Rivera (CR11019)
+- José Fernando González León (GL24021)
+- Mario Ernesto Montoya Vásquez (MV16013)
+
 ## Objetivo
 Implementar un sistema modular que permita:
 - Registrar y administrar **Usuarios** (estados/tipos).
@@ -12,13 +18,13 @@ Implementar un sistema modular que permita:
 Entidades principales: Usuario, Libro, Autor, Categoria, Prestamo, Reserva, Multa.  
 Estados/Enums: tipo_usuario, estado_usuario, estado_libro, estado_prestamo, estado_reserva, estado_multa.
 
-# Diagrama de Clases Sistema de Gestión de Biblioteca
+## Diagrama de Clases Sistema de Gestión de Biblioteca
 <img width="1957" height="881" alt="DiagramaClases" src="https://github.com/user-attachments/assets/e05443ab-0df6-431f-bbd8-52733a61836a" />
 
-# Diagrama entidad relacion Sistema de gestion de biblioteca
+## Diagrama entidad relacion Sistema de gestion de biblioteca
 <img width="3840" height="3279" alt="DiagramaEntidadRelacion" src="https://github.com/user-attachments/assets/a24bd280-5162-42ef-bf02-a2d359324b1c" />
 
-## Casos de uso
+# Casos de uso
 
 1. Gestionar Usuarios
  - Descripción: El administrador registra, consulta y actualiza los datos de los
@@ -55,9 +61,11 @@ Estados/Enums: tipo_usuario, estado_usuario, estado_libro, estado_prestamo, esta
    monto según días de retraso, registra estado
    (PENDIENTE/PAGADA/CANCELADA) y permite registrar pagos.
    
-# Diagrama de casos de usos
+## Diagrama de casos de usos
 ![WhatsApp Image 2025-09-26 at 11 32 50 PM](https://github.com/user-attachments/assets/6e48cd32-59f3-46c5-9fcb-82e481c0bc2b)
 
-## Tecnologías
-- Java 17 con 
+# Tecnologías
+- Java 17 con estructura Grandle
+- PostgreSQL
+- Spring Boot
   
