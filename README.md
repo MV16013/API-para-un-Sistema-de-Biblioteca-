@@ -68,9 +68,10 @@ Estados/Enums: tipo_usuario, estado_usuario, estado_libro, estado_prestamo, esta
 
 # Tecnologías
 - Java 17 con estructura Grandle
-- PostgreSQL
+- H2 database
 - Spring Boot
-
+- Lombok
+  
 
 ### **Usuarios** (`/api/usuarios`)
 
@@ -110,3 +111,4 @@ Estados/Enums: tipo_usuario, estado_usuario, estado_libro, estado_prestamo, esta
 | POST | `/api/prestamos` | Crear nuevo préstamo |
 | PATCH | `/api/prestamos/{id}/devolver` | Devolver libro |
 | DELETE | `/api/prestamos/{id}` | Eliminar préstamo |
+
