@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "libros")
@@ -25,18 +27,12 @@ public class Libro {
     private String titulo;
 
     @Column(length = 100)
-    private String autor;
-
-    @Column(length = 100)
     private String editorial;
 
     @Column(length = 1000)
     private String descripcion;
 
     private Integer anioPublicacion;
-
-    @Column(length = 50)
-    private String categoria;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -52,6 +48,32 @@ public class Libro {
     private LocalDateTime fechaRegistro;
 
     private LocalDateTime fechaActualizacion;
+
+    // Relación Many-to-Many con Autor (lado propietario)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "libro_autor",
+            joinColumns = @JoinColumn(name = "libro_id"),
+            inverseJoinColumns = @JoinColumn(name = "autor_id")
+    )
+    private List<Autor> autores = new ArrayList<>();
+
+    // Relación Many-to-Many con Categoría (lado propietario)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "libro_categoria",
+            joinColumns = @JoinColumn(name = "libro_id"),
+            inverseJoinColumns = @JoinColumn(name = "categoria_id")
+    )
+    private List<Categoria> categorias = new ArrayList<>();
+
+    // Relación One-to-Many con Préstamo
+    @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Prestamo> prestamos = new ArrayList<>();
+
+    // Relación One-to-Many con Reserva
+    @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reserva> reservas = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
@@ -92,5 +114,29 @@ public class Libro {
                 estado = EstadoLibro.DISPONIBLE;
             }
         }
+    }
+
+    public void agregarAutor(Autor autor) {
+        if (!this.autores.contains(autor)) {
+            this.autores.add(autor);
+            autor.getLibros().add(this);
+        }
+    }
+
+    public void removerAutor(Autor autor) {
+        this.autores.remove(autor);
+        autor.getLibros().remove(this);
+    }
+
+    public void agregarCategoria(Categoria categoria) {
+        if (!this.categorias.contains(categoria)) {
+            this.categorias.add(categoria);
+            categoria.getLibros().add(this);
+        }
+    }
+
+    public void removerCategoria(Categoria categoria) {
+        this.categorias.remove(categoria);
+        categoria.getLibros().remove(this);
     }
 }

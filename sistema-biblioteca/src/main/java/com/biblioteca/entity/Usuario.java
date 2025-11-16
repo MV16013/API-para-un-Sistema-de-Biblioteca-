@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
@@ -49,6 +51,18 @@ public class Usuario {
     private LocalDateTime fechaRegistro;
 
     private LocalDateTime fechaActualizacion;
+
+    // Relación One-to-Many con Préstamo
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Prestamo> prestamos = new ArrayList<>();
+
+    // Relación One-to-Many con Reserva
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reserva> reservas = new ArrayList<>();
+
+    // Relación One-to-Many con Multa
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Multa> multas = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

@@ -1,98 +1,149 @@
 -- =====================================================
--- DATOS DE PRUEBA - SISTEMA DE BIBLIOTECA
+-- DATA.SQL - DATOS DE PRUEBA PARA SISTEMA BIBLIOTECA
 -- =====================================================
 
--- =====================================================
--- USUARIOS
--- =====================================================
-INSERT INTO usuarios (numero_identificacion, nombre, apellido, email, telefono, direccion, tipo_usuario, estado, fecha_registro)
-VALUES
--- Usuarios Activos
-('12345678', 'Juan', 'Pérez', 'juan.perez@email.com', '1234-5678', 'Calle Principal #123, San Salvador', 'ESTUDIANTE', 'ACTIVO', CURRENT_TIMESTAMP),
-('87654321', 'María', 'González', 'maria.gonzalez@email.com', '8765-4321', 'Avenida Central #456, Santa Ana', 'PROFESOR', 'ACTIVO', CURRENT_TIMESTAMP),
-('11223344', 'Carlos', 'Rodríguez', 'carlos.rodriguez@email.com', '1122-3344', 'Boulevard Sur #789, San Miguel', 'ADMINISTRATIVO', 'ACTIVO', CURRENT_TIMESTAMP),
-('55667788', 'Laura', 'Hernández', 'laura.hernandez@email.com', '5566-7788', 'Calle Las Flores #321, Sonsonate', 'ESTUDIANTE', 'ACTIVO', CURRENT_TIMESTAMP),
-('99001122', 'Roberto', 'López', 'roberto.lopez@email.com', '9900-1122', 'Avenida Norte #654, La Libertad', 'PROFESOR', 'ACTIVO', CURRENT_TIMESTAMP),
+-- INSERTAR AUTORES
+INSERT INTO autores (nombre, apellido, nacionalidad, fecha_nacimiento, biografia, fecha_registro) VALUES
+('Gabriel', 'García Márquez', 'Colombiana', '1927-03-06', 'Escritor colombiano, ganador del Premio Nobel de Literatura en 1982. Autor de "Cien años de soledad".', CURRENT_TIMESTAMP),
+('Isabel', 'Allende', 'Chilena', '1942-08-02', 'Escritora chilena, autora de bestsellers internacionales como "La casa de los espíritus".', CURRENT_TIMESTAMP),
+('Jorge Luis', 'Borges', 'Argentina', '1899-08-24', 'Escritor argentino, uno de los autores más destacados de la literatura del siglo XX.', CURRENT_TIMESTAMP),
+('Mario', 'Vargas Llosa', 'Peruana', '1936-03-28', 'Escritor peruano, Premio Nobel de Literatura 2010. Autor de "La ciudad y los perros".', CURRENT_TIMESTAMP),
+('Julio', 'Cortázar', 'Argentina', '1914-08-26', 'Escritor argentino, maestro del cuento corto y la novela experimental.', CURRENT_TIMESTAMP),
+('Pablo', 'Neruda', 'Chilena', '1904-07-12', 'Poeta chileno, Premio Nobel de Literatura 1971. Uno de los poetas más influyentes del siglo XX.', CURRENT_TIMESTAMP),
+('Octavio', 'Paz', 'Mexicana', '1914-03-31', 'Poeta y ensayista mexicano, Premio Nobel de Literatura 1990.', CURRENT_TIMESTAMP),
+('Carlos', 'Fuentes', 'Mexicana', '1928-11-11', 'Escritor mexicano, una de las figuras más importantes del boom latinoamericano.', CURRENT_TIMESTAMP),
+('Laura', 'Esquivel', 'Mexicana', '1950-09-30', 'Escritora mexicana, autora de "Como agua para chocolate".', CURRENT_TIMESTAMP),
+('Miguel de', 'Cervantes', 'Española', '1547-09-29', 'Escritor español, autor de "Don Quijote de la Mancha", considerada la primera novela moderna.', CURRENT_TIMESTAMP);
 
--- Usuarios Suspendidos/Inactivos
-('99887766', 'Ana', 'Martínez', 'ana.martinez@email.com', '9988-7766', 'Calle Norte #321, Usulután', 'VISITANTE', 'SUSPENDIDO', CURRENT_TIMESTAMP),
-('44556677', 'Pedro', 'Ramírez', 'pedro.ramirez@email.com', '4455-6677', 'Boulevard Este #159, Ahuachapán', 'ESTUDIANTE', 'INACTIVO', CURRENT_TIMESTAMP);
+-- INSERTAR CATEGORÍAS
+INSERT INTO categorias (codigo, nombre, descripcion, fecha_registro) VALUES
+('FIC', 'Ficción', 'Novelas y cuentos de ficción literaria', CURRENT_TIMESTAMP),
+('POE', 'Poesía', 'Colecciones de poesía y verso', CURRENT_TIMESTAMP),
+('HIS', 'Historia', 'Libros de historia y biografías', CURRENT_TIMESTAMP),
+('CIE', 'Ciencia', 'Libros científicos y de divulgación', CURRENT_TIMESTAMP),
+('TEC', 'Tecnología', 'Libros sobre tecnología e informática', CURRENT_TIMESTAMP),
+('FIL', 'Filosofía', 'Obras filosóficas y de pensamiento', CURRENT_TIMESTAMP),
+('ART', 'Arte', 'Libros sobre arte, pintura y escultura', CURRENT_TIMESTAMP),
+('INF', 'Infantil', 'Literatura infantil y juvenil', CURRENT_TIMESTAMP),
+('ROM', 'Romance', 'Novelas románticas', CURRENT_TIMESTAMP),
+('MIS', 'Misterio', 'Novelas de misterio y suspenso', CURRENT_TIMESTAMP);
 
--- =====================================================
--- LIBROS
--- =====================================================
-INSERT INTO libros (isbn, titulo, autor, editorial, descripcion, anio_publicacion, categoria, estado, stock_total, stock_disponible, fecha_registro)
-VALUES
--- Literatura Latinoamericana
-('978-0-307-47472-1', 'Cien Años de Soledad', 'Gabriel García Márquez', 'Vintage Español', 'La obra maestra del realismo mágico que narra la historia de la familia Buendía en el pueblo ficticio de Macondo.', 2006, 'Ficción', 'DISPONIBLE', 5, 5, CURRENT_TIMESTAMP),
-('978-0-060-88328-3', 'Crónica de una Muerte Anunciada', 'Gabriel García Márquez', 'Harper Collins', 'Una investigación periodística sobre un asesinato anunciado en un pequeño pueblo costero.', 2003, 'Ficción', 'DISPONIBLE', 3, 3, CURRENT_TIMESTAMP),
-('978-8-420-47175-7', 'La Casa de los Espíritus', 'Isabel Allende', 'Plaza & Janés', 'La saga familiar de los Trueba a través de varias generaciones en Chile.', 2015, 'Ficción', 'DISPONIBLE', 4, 4, CURRENT_TIMESTAMP),
-('978-8-437-60454-1', 'Rayuela', 'Julio Cortázar', 'Cátedra', 'Una novela experimental que puede leerse de múltiples formas, considerada una de las grandes obras de la literatura hispanoamericana.', 2008, 'Ficción', 'DISPONIBLE', 2, 2, CURRENT_TIMESTAMP),
+-- INSERTAR LIBROS
+INSERT INTO libros (isbn, titulo, editorial, descripcion, anio_publicacion, stock_total, stock_disponible, estado, fecha_registro) VALUES
+('978-0-307-47472-4', 'Cien años de soledad', 'Editorial Sudamericana', 'La obra maestra de García Márquez sobre la familia Buendía en Macondo.', 1967, 10, 10, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-1-501-16774-3', 'La casa de los espíritus', 'Plaza & Janés', 'Saga familiar que recorre cuatro generaciones de la familia Trueba.', 1982, 8, 8, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-14-118726-6', 'Ficciones', 'Emecé', 'Colección de cuentos de Jorge Luis Borges que desafían la realidad.', 1944, 12, 12, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-374-52623-9', 'La ciudad y los perros', 'Alfaguara', 'Primera novela de Vargas Llosa sobre cadetes en un colegio militar.', 1963, 7, 7, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-394-75284-7', 'Rayuela', 'Editorial Sudamericana', 'Novela experimental de Cortázar que puede leerse de múltiples formas.', 1963, 9, 9, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-307-26349-8', 'Veinte poemas de amor y una canción desesperada', 'Nascimento', 'Poemario de amor de Pablo Neruda.', 1924, 15, 15, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-8021-5084-8', 'El laberinto de la soledad', 'Fondo de Cultura Económica', 'Ensayo de Octavio Paz sobre la identidad mexicana.', 1950, 6, 6, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-374-17632-0', 'La muerte de Artemio Cruz', 'Fondo de Cultura Económica', 'Novela de Carlos Fuentes sobre un revolucionario mexicano.', 1962, 5, 5, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-385-72123-4', 'Como agua para chocolate', 'Planeta', 'Novela de realismo mágico sobre amor y cocina en México.', 1989, 10, 10, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-06-093434-1', 'Don Quijote de la Mancha', 'Francisco de Robles', 'La obra cumbre de Cervantes sobre el ingenioso hidalgo.', 1605, 20, 20, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-307-38991-9', 'El amor en los tiempos del cólera', 'Editorial Sudamericana', 'Historia de amor entre Florentino Ariza y Fermina Daza.', 1985, 8, 8, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-06-088328-7', 'Crónica de una muerte anunciada', 'Editorial Sudamericana', 'Novela corta sobre un asesinato anunciado en un pueblo.', 1981, 11, 11, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-14-243723-0', 'El Aleph', 'Emecé', 'Colección de cuentos fantásticos de Borges.', 1949, 10, 10, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-06-093298-9', 'Conversación en la Catedral', 'Seix Barral', 'Novela de Vargas Llosa sobre el Perú bajo dictadura.', 1969, 6, 6, 'DISPONIBLE', CURRENT_TIMESTAMP),
+('978-0-375-72721-5', 'Bestiario', 'Editorial Sudamericana', 'Primera colección de cuentos de Julio Cortázar.', 1951, 7, 7, 'DISPONIBLE', CURRENT_TIMESTAMP);
 
--- Clásicos Universales
-('978-0-142-43723-0', 'Don Quijote de la Mancha', 'Miguel de Cervantes', 'Penguin Classics', 'Las aventuras del ingenioso hidalgo Don Quijote y su fiel escudero Sancho Panza.', 2003, 'Clásicos', 'DISPONIBLE', 6, 6, CURRENT_TIMESTAMP),
-('978-0-156-01222-8', 'El Principito', 'Antoine de Saint-Exupéry', 'Harcourt', 'Un cuento poético que trata sobre la amistad y el amor a través de las aventuras de un pequeño príncipe.', 2000, 'Infantil', 'DISPONIBLE', 8, 8, CURRENT_TIMESTAMP),
+-- RELACIONAR LIBROS CON AUTORES (libro_autor)
+INSERT INTO libro_autor (libro_id, autor_id) VALUES
+(1, 1),   -- Cien años de soledad - García Márquez
+(2, 2),   -- La casa de los espíritus - Isabel Allende
+(3, 3),   -- Ficciones - Borges
+(4, 4),   -- La ciudad y los perros - Vargas Llosa
+(5, 5),   -- Rayuela - Cortázar
+(6, 6),   -- Veinte poemas - Neruda
+(7, 7),   -- El laberinto de la soledad - Octavio Paz
+(8, 8),   -- La muerte de Artemio Cruz - Carlos Fuentes
+(9, 9),   -- Como agua para chocolate - Laura Esquivel
+(10, 10), -- Don Quijote - Cervantes
+(11, 1),  -- El amor en los tiempos del cólera - García Márquez
+(12, 1),  -- Crónica de una muerte anunciada - García Márquez
+(13, 3),  -- El Aleph - Borges
+(14, 4),  -- Conversación en la Catedral - Vargas Llosa
+(15, 5);  -- Bestiario - Cortázar
 
--- Ciencia Ficción y Distopías
-('978-0-452-28423-4', '1984', 'George Orwell', 'Penguin Books', 'Una distopía sobre un régimen totalitario que controla todos los aspectos de la vida.', 1961, 'Ciencia Ficción', 'DISPONIBLE', 4, 4, CURRENT_TIMESTAMP),
-('978-0-618-26030-1', 'Un Mundo Feliz', 'Aldous Huxley', 'Harper Perennial', 'Una sociedad futurista donde la felicidad se impone mediante el condicionamiento y las drogas.', 2006, 'Ciencia Ficción', 'DISPONIBLE', 3, 3, CURRENT_TIMESTAMP),
-('978-1-451-67396-2', 'Fahrenheit 451', 'Ray Bradbury', 'Simon & Schuster', 'En un futuro donde los libros están prohibidos, un bombero cuya misión es quemarlos comienza a cuestionarse.', 2013, 'Ciencia Ficción', 'DISPONIBLE', 3, 3, CURRENT_TIMESTAMP),
+-- RELACIONAR LIBROS CON CATEGORÍAS (libro_categoria)
+INSERT INTO libro_categoria (libro_id, categoria_id) VALUES
+(1, 1),   -- Cien años de soledad - Ficción
+(2, 1),   -- La casa de los espíritus - Ficción
+(3, 1),   -- Ficciones - Ficción
+(4, 1),   -- La ciudad y los perros - Ficción
+(5, 1),   -- Rayuela - Ficción
+(6, 2),   -- Veinte poemas - Poesía
+(7, 6),   -- El laberinto de la soledad - Filosofía
+(8, 1),   -- La muerte de Artemio Cruz - Ficción
+(8, 3),   -- La muerte de Artemio Cruz - Historia
+(9, 1),   -- Como agua para chocolate - Ficción
+(9, 9),   -- Como agua para chocolate - Romance
+(10, 1),  -- Don Quijote - Ficción
+(10, 3),  -- Don Quijote - Historia
+(11, 1),  -- El amor en los tiempos del cólera - Ficción
+(11, 9),  -- El amor en los tiempos del cólera - Romance
+(12, 1),  -- Crónica de una muerte anunciada - Ficción
+(12, 10), -- Crónica de una muerte anunciada - Misterio
+(13, 1),  -- El Aleph - Ficción
+(14, 1),  -- Conversación en la Catedral - Ficción
+(14, 3),  -- Conversación en la Catedral - Historia
+(15, 1);  -- Bestiario - Ficción
 
--- Desarrollo Personal
-('978-0-062-45747-3', 'El Alquimista', 'Paulo Coelho', 'HarperOne', 'La historia de un joven pastor andaluz que emprende un viaje en busca de su leyenda personal.', 2014, 'Autoayuda', 'DISPONIBLE', 5, 5, CURRENT_TIMESTAMP),
-('978-1-501-13995-2', 'Los 7 Hábitos de la Gente Altamente Efectiva', 'Stephen Covey', 'Simon & Schuster', 'Un enfoque integral para resolver problemas personales y profesionales.', 2013, 'Autoayuda', 'DISPONIBLE', 4, 4, CURRENT_TIMESTAMP),
+-- INSERTAR USUARIOS
+INSERT INTO usuarios (numero_identificacion, nombre, apellido, email, telefono, direccion, tipo_usuario, estado, fecha_registro) VALUES
+('1234567890', 'Juan', 'Pérez', 'juan.perez@email.com', '555-0101', 'Calle Principal 123', 'ESTUDIANTE', 'ACTIVO', CURRENT_TIMESTAMP),
+('0987654321', 'María', 'González', 'maria.gonzalez@email.com', '555-0102', 'Avenida Central 456', 'ESTUDIANTE', 'ACTIVO', CURRENT_TIMESTAMP),
+('1122334455', 'Carlos', 'Rodríguez', 'carlos.rodriguez@email.com', '555-0103', 'Boulevard Norte 789', 'PROFESOR', 'ACTIVO', CURRENT_TIMESTAMP),
+('5544332211', 'Ana', 'Martínez', 'ana.martinez@email.com', '555-0104', 'Paseo del Sur 321', 'PROFESOR', 'ACTIVO', CURRENT_TIMESTAMP),
+('6677889900', 'Luis', 'Hernández', 'luis.hernandez@email.com', '555-0105', 'Camino Real 654', 'ADMINISTRATIVO', 'ACTIVO', CURRENT_TIMESTAMP),
+('9988776655', 'Laura', 'López', 'laura.lopez@email.com', '555-0106', 'Plaza Mayor 147', 'ESTUDIANTE', 'ACTIVO', CURRENT_TIMESTAMP),
+('3344556677', 'Pedro', 'Sánchez', 'pedro.sanchez@email.com', '555-0107', 'Callejón Oscuro 258', 'ESTUDIANTE', 'SUSPENDIDO', CURRENT_TIMESTAMP),
+('7788990011', 'Elena', 'García', 'elena.garcia@email.com', '555-0108', 'Ronda del Este 369', 'VISITANTE', 'ACTIVO', CURRENT_TIMESTAMP),
+('2233445566', 'Miguel', 'Torres', 'miguel.torres@email.com', '555-0109', 'Travesía Oeste 741', 'ESTUDIANTE', 'ACTIVO', CURRENT_TIMESTAMP),
+('4455667788', 'Carmen', 'Ramírez', 'carmen.ramirez@email.com', '555-0110', 'Pasaje Centro 852', 'PROFESOR', 'ACTIVO', CURRENT_TIMESTAMP);
 
--- Literatura Juvenil
-('978-0-439-02348-1', 'Harry Potter y la Piedra Filosofal', 'J.K. Rowling', 'Scholastic', 'El primer libro de la saga que narra las aventuras de un joven mago.', 1998, 'Fantasía', 'DISPONIBLE', 7, 7, CURRENT_TIMESTAMP),
-('978-0-439-13959-5', 'El Señor de los Anillos: La Comunidad del Anillo', 'J.R.R. Tolkien', 'Houghton Mifflin', 'El inicio de la épica aventura en la Tierra Media.', 2001, 'Fantasía', 'DISPONIBLE', 5, 5, CURRENT_TIMESTAMP),
+-- INSERTAR PRÉSTAMOS (algunos activos, algunos devueltos, algunos vencidos)
+INSERT INTO prestamos (usuario_id, libro_id, fecha_prestamo, fecha_devolucion_prevista, fecha_devolucion_real, estado, observaciones, multa) VALUES
+-- Préstamos activos
+(1, 1, CURRENT_TIMESTAMP - INTERVAL '5' DAY, CURRENT_TIMESTAMP + INTERVAL '9' DAY, NULL, 'ACTIVO', 'Préstamo en curso', 0.00),
+(2, 3, CURRENT_TIMESTAMP - INTERVAL '3' DAY, CURRENT_TIMESTAMP + INTERVAL '11' DAY, NULL, 'ACTIVO', 'Préstamo en curso', 0.00),
+(3, 5, CURRENT_TIMESTAMP - INTERVAL '7' DAY, CURRENT_TIMESTAMP + INTERVAL '7' DAY, NULL, 'ACTIVO', 'Préstamo en curso', 0.00),
 
--- Libros con stock limitado (para probar disponibilidad)
-('978-0-316-76948-0', 'El Guardián entre el Centeno', 'J.D. Salinger', 'Little Brown', 'La historia de Holden Caulfield, un adolescente en Nueva York tras ser expulsado del colegio.', 2001, 'Ficción', 'DISPONIBLE', 2, 2, CURRENT_TIMESTAMP),
-('978-0-061-12008-4', 'Matar a un Ruiseñor', 'Harper Lee', 'Harper Perennial', 'Una novela sobre la injusticia racial en el sur de Estados Unidos durante los años 30.', 2006, 'Ficción', 'DISPONIBLE', 1, 1, CURRENT_TIMESTAMP);
+-- Préstamos devueltos
+(4, 2, CURRENT_TIMESTAMP - INTERVAL '20' DAY, CURRENT_TIMESTAMP - INTERVAL '6' DAY, CURRENT_TIMESTAMP - INTERVAL '7' DAY, 'DEVUELTO', 'Devuelto a tiempo', 0.00),
+(5, 4, CURRENT_TIMESTAMP - INTERVAL '25' DAY, CURRENT_TIMESTAMP - INTERVAL '11' DAY, CURRENT_TIMESTAMP - INTERVAL '10' DAY, 'DEVUELTO', 'Devuelto a tiempo', 0.00),
+(6, 6, CURRENT_TIMESTAMP - INTERVAL '30' DAY, CURRENT_TIMESTAMP - INTERVAL '16' DAY, CURRENT_TIMESTAMP - INTERVAL '14' DAY, 'DEVUELTO', 'Devuelto con 2 días de retraso', 2.00),
 
--- =====================================================
--- PRÉSTAMOS
--- =====================================================
-INSERT INTO prestamos (usuario_id, libro_id, fecha_prestamo, fecha_devolucion_prevista, estado, multa, observaciones)
-VALUES
--- Préstamos Activos (sin vencer)
-(1, 1, CURRENT_TIMESTAMP, DATEADD('DAY', 15, CURRENT_TIMESTAMP), 'ACTIVO', 0.00, 'Préstamo para trabajo de literatura latinoamericana'),
-(2, 7, DATEADD('DAY', -5, CURRENT_TIMESTAMP), DATEADD('DAY', 10, CURRENT_TIMESTAMP), 'ACTIVO', 0.00, 'Material para clase de filosofía política'),
-(4, 10, DATEADD('DAY', -3, CURRENT_TIMESTAMP), DATEADD('DAY', 12, CURRENT_TIMESTAMP), 'ACTIVO', 0.00, 'Lectura de crecimiento personal'),
-(5, 12, DATEADD('DAY', -1, CURRENT_TIMESTAMP), DATEADD('DAY', 29, CURRENT_TIMESTAMP), 'ACTIVO', 0.00, 'Material didáctico para curso de literatura fantástica'),
+-- Préstamos vencidos (sin devolver)
+(7, 7, CURRENT_TIMESTAMP - INTERVAL '25' DAY, CURRENT_TIMESTAMP - INTERVAL '11' DAY, NULL, 'ACTIVO', 'Préstamo vencido hace 11 días', 11.00),
+(9, 9, CURRENT_TIMESTAMP - INTERVAL '20' DAY, CURRENT_TIMESTAMP - INTERVAL '6' DAY, NULL, 'ACTIVO', 'Préstamo vencido hace 6 días', 6.00),
 
--- Préstamos Vencidos (pasó la fecha de devolución)
-(1, 5, DATEADD('DAY', -25, CURRENT_TIMESTAMP), DATEADD('DAY', -10, CURRENT_TIMESTAMP), 'ACTIVO', 0.00, 'Préstamo vencido - Contactar al usuario'),
-(4, 14, DATEADD('DAY', -20, CURRENT_TIMESTAMP), DATEADD('DAY', -5, CURRENT_TIMESTAMP), 'ACTIVO', 0.00, 'Retraso de 5 días'),
+-- Préstamos renovados
+(10, 10, CURRENT_TIMESTAMP - INTERVAL '10' DAY, CURRENT_TIMESTAMP + INTERVAL '11' DAY, NULL, 'RENOVADO', 'Préstamo renovado una vez', 0.00);
 
--- Préstamos Devueltos (completados)
-(1, 6, DATEADD('DAY', -30, CURRENT_TIMESTAMP), DATEADD('DAY', -15, CURRENT_TIMESTAMP), 'DEVUELTO', 0.00, 'Devuelto a tiempo | Devolución: Libro en perfecto estado'),
-(2, 11, DATEADD('DAY', -45, CURRENT_TIMESTAMP), DATEADD('DAY', -30, CURRENT_TIMESTAMP), 'DEVUELTO', 0.00, 'Devuelto a tiempo | Devolución: Sin novedades'),
-(3, 8, DATEADD('DAY', -40, CURRENT_TIMESTAMP), DATEADD('DAY', -25, CURRENT_TIMESTAMP), 'DEVUELTO', 0.00, 'Devuelto a tiempo | Devolución: Excelente estado'),
-(5, 9, DATEADD('DAY', -35, CURRENT_TIMESTAMP), DATEADD('DAY', -20, CURRENT_TIMESTAMP), 'DEVUELTO', 0.00, 'Devuelto a tiempo | Devolución: Libro usado para proyecto de investigación'),
+-- INSERTAR RESERVAS
+INSERT INTO reservas (usuario_id, libro_id, fecha_reserva, fecha_vencimiento, estado, observaciones) VALUES
+-- Reservas activas
+(1, 8, CURRENT_TIMESTAMP - INTERVAL '1' DAY, CURRENT_TIMESTAMP + INTERVAL '2' DAY, 'ACTIVA', 'Esperando disponibilidad del libro'),
+(2, 11, CURRENT_TIMESTAMP - INTERVAL '2' DAY, CURRENT_TIMESTAMP + INTERVAL '1' DAY, 'ACTIVA', 'Primera en lista de espera'),
 
--- Préstamos Devueltos con Retraso (con multa)
-(4, 2, DATEADD('DAY', -50, CURRENT_TIMESTAMP), DATEADD('DAY', -35, CURRENT_TIMESTAMP), 'VENCIDO', 8.00, 'Devuelto con 8 días de retraso | Devolución: Multa aplicada'),
-(1, 3, DATEADD('DAY', -60, CURRENT_TIMESTAMP), DATEADD('DAY', -45, CURRENT_TIMESTAMP), 'VENCIDO', 3.00, 'Devuelto con 3 días de retraso | Devolución: Pequeño retraso justificado');
+-- Reservas vencidas
+(6, 12, CURRENT_TIMESTAMP - INTERVAL '5' DAY, CURRENT_TIMESTAMP - INTERVAL '2' DAY, 'VENCIDA', 'No recogió el libro a tiempo'),
 
--- =====================================================
--- ACTUALIZAR STOCK DE LIBROS PRESTADOS
--- =====================================================
--- Reducir stock de libros que están actualmente prestados
-UPDATE libros SET stock_disponible = stock_disponible - 1 WHERE id = 1;  -- Cien Años de Soledad (prestado a Juan)
-UPDATE libros SET stock_disponible = stock_disponible - 1 WHERE id = 7;  -- 1984 (prestado a María)
-UPDATE libros SET stock_disponible = stock_disponible - 1 WHERE id = 10; -- El Alquimista (prestado a Laura)
-UPDATE libros SET stock_disponible = stock_disponible - 1 WHERE id = 12; -- El Señor de los Anillos (prestado a Roberto)
-UPDATE libros SET stock_disponible = stock_disponible - 1 WHERE id = 5;  -- Don Quijote (prestado a Juan - vencido)
-UPDATE libros SET stock_disponible = stock_disponible - 1 WHERE id = 14; -- Matar a un Ruiseñor (prestado a Laura - vencido)
+-- Reservas canceladas
+(9, 13, CURRENT_TIMESTAMP - INTERVAL '3' DAY, CURRENT_TIMESTAMP + INTERVAL '0' DAY, 'CANCELADA', 'Usuario canceló la reserva');
 
--- Actualizar estado de libros sin stock
-UPDATE libros SET estado = 'PRESTADO' WHERE id = 14 AND stock_disponible = 0;
+-- INSERTAR MULTAS
+INSERT INTO multas (usuario_id, prestamo_id, monto, concepto, fecha_generacion, fecha_pago, estado) VALUES
+-- Multas pendientes
+(7, 7, 11.00, 'Multa por retraso de 11 días en devolución de: El laberinto de la soledad', CURRENT_TIMESTAMP - INTERVAL '11' DAY, NULL, 'PENDIENTE'),
+(9, 8, 6.00, 'Multa por retraso de 6 días en devolución de: Como agua para chocolate', CURRENT_TIMESTAMP - INTERVAL '6' DAY, NULL, 'PENDIENTE'),
 
--- =====================================================
--- RESUMEN DE DATOS INSERTADOS
--- =====================================================
--- 7 Usuarios (5 activos, 1 suspendido, 1 inactivo)
--- 14 Libros (diversos géneros y disponibilidad)
--- 12 Préstamos (4 activos, 2 vencidos, 6 devueltos)
--- =====================================================
+-- Multas pagadas
+(6, 6, 2.00, 'Multa por retraso de 2 días en devolución de: Veinte poemas de amor y una canción desesperada', CURRENT_TIMESTAMP - INTERVAL '16' DAY, CURRENT_TIMESTAMP - INTERVAL '14' DAY, 'PAGADA'),
+
+-- Multas canceladas
+(2, NULL, 5.00, 'Multa cancelada por error administrativo', CURRENT_TIMESTAMP - INTERVAL '10' DAY, NULL, 'CANCELADA');
+
+-- Actualizar stock disponible de libros prestados
+UPDATE libros SET stock_disponible = stock_disponible - 1 WHERE id IN (1, 3, 5, 7, 9, 10);
+UPDATE libros SET estado = 'PRESTADO' WHERE id IN (1, 3, 5, 7, 9, 10);

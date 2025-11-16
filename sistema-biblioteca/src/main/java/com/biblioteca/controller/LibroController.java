@@ -48,15 +48,39 @@ public class LibroController {
         return ResponseEntity.ok(libros);
     }
 
-    @GetMapping("/buscar/autor")
-    public ResponseEntity<List<LibroResponseDTO>> buscarPorAutor(@RequestParam String autor) {
-        List<LibroResponseDTO> libros = libroService.buscarLibrosPorAutor(autor);
+    @GetMapping("/buscar/autor/{autorId}")
+    public ResponseEntity<List<LibroResponseDTO>> buscarPorAutor(@PathVariable Long autorId) {
+        List<LibroResponseDTO> libros = libroService.buscarLibrosPorAutor(autorId);
+        return ResponseEntity.ok(libros);
+    }
+
+    @GetMapping("/buscar/autor-nombre")
+    public ResponseEntity<List<LibroResponseDTO>> buscarPorAutorNombre(@RequestParam String nombre) {
+        List<LibroResponseDTO> libros = libroService.buscarLibrosPorAutorNombre(nombre);
+        return ResponseEntity.ok(libros);
+    }
+
+    @GetMapping("/buscar/categoria/{categoriaId}")
+    public ResponseEntity<List<LibroResponseDTO>> buscarPorCategoria(@PathVariable Long categoriaId) {
+        List<LibroResponseDTO> libros = libroService.buscarLibrosPorCategoria(categoriaId);
+        return ResponseEntity.ok(libros);
+    }
+
+    @GetMapping("/buscar/categoria-codigo/{codigo}")
+    public ResponseEntity<List<LibroResponseDTO>> buscarPorCategoriaCodigo(@PathVariable String codigo) {
+        List<LibroResponseDTO> libros = libroService.buscarLibrosPorCategoriaCodigo(codigo);
         return ResponseEntity.ok(libros);
     }
 
     @GetMapping("/disponibles")
     public ResponseEntity<List<LibroResponseDTO>> listarLibrosDisponibles() {
         List<LibroResponseDTO> libros = libroService.listarLibrosDisponibles();
+        return ResponseEntity.ok(libros);
+    }
+
+    @GetMapping("/busqueda-avanzada")
+    public ResponseEntity<List<LibroResponseDTO>> busquedaAvanzada(@RequestParam String busqueda) {
+        List<LibroResponseDTO> libros = libroService.busquedaAvanzada(busqueda);
         return ResponseEntity.ok(libros);
     }
 

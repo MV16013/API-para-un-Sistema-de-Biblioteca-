@@ -6,6 +6,8 @@ import com.biblioteca.dto.usuario.UsuarioUpdateDTO;
 import com.biblioteca.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,10 +32,46 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UsuarioResponseDTO> obtenerUsuarioPorEmail(@PathVariable String email) {
+        UsuarioResponseDTO usuario = usuarioService.obtenerUsuarioPorEmail(email);
+        return ResponseEntity.ok(usuario);
+    }
+
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
         List<UsuarioResponseDTO> usuarios = usuarioService.listarTodosLosUsuarios();
         return ResponseEntity.ok(usuarios);
+    }
+
+    @GetMapping("/paginados")
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarUsuariosPaginados(Pageable pageable) {
+        Page<UsuarioResponseDTO> usuarios = usuarioService.listarUsuariosPaginados(pageable);
+        return ResponseEntity.ok(usuarios);
+    }
+
+    @GetMapping("/buscar/nombre")
+    public ResponseEntity<List<UsuarioResponseDTO>> buscarPorNombre(@RequestParam String nombre) {
+        List<UsuarioResponseDTO> usuarios = usuarioService.buscarUsuariosPorNombre(nombre);
+        return ResponseEntity.ok(usuarios);
+    }
+
+    @GetMapping("/con-prestamos-activos")
+    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuariosConPrestamosActivos() {
+        List<UsuarioResponseDTO> usuarios = usuarioService.listarUsuariosConPrestamosActivos();
+        return ResponseEntity.ok(usuarios);
+    }
+
+    @GetMapping("/con-multas-pendientes")
+    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuariosConMultasPendientes() {
+        List<UsuarioResponseDTO> usuarios = usuarioService.listarUsuariosConMultasPendientes();
+        return ResponseEntity.ok(usuarios);
+    }
+
+    @GetMapping("/{id}/puede-prestar")
+    public ResponseEntity<Boolean> puedeRealizarPrestamo(@PathVariable Long id) {
+        boolean puede = usuarioService.puedeRealizarPrestamo(id);
+        return ResponseEntity.ok(puede);
     }
 
     @PutMapping("/{id}")
@@ -44,15 +82,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
-        usuarioService.eliminarUsuario(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @PatchMapping("/{id}/suspender")
-    public ResponseEntity<UsuarioResponseDTO> suspenderUsuario(@PathVariable Long id) {
-        UsuarioResponseDTO usuario = usuarioService.suspenderUsuario(id);
+    public ResponseEntity<UsuarioResponseDTO> suspenderUsuario(
+            @PathVariable Long id,
+            @RequestParam String motivo) {
+        UsuarioResponseDTO usuario = usuarioService.suspenderUsuario(id, motivo);
         return ResponseEntity.ok(usuario);
     }
 
@@ -60,5 +94,11 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> activarUsuario(@PathVariable Long id) {
         UsuarioResponseDTO usuario = usuarioService.activarUsuario(id);
         return ResponseEntity.ok(usuario);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
+        usuarioService.eliminarUsuario(id);
+        return ResponseEntity.noContent().build();
     }
 }

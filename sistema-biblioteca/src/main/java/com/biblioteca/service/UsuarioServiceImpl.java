@@ -6,8 +6,12 @@ import com.biblioteca.dto.usuario.UsuarioUpdateDTO;
 import com.biblioteca.entity.Usuario;
 import com.biblioteca.enums.EstadoUsuario;
 import com.biblioteca.exception.ResourceNotFoundException;
+import com.biblioteca.repository.MultaRepository;
+import com.biblioteca.repository.PrestamoRepository;
 import com.biblioteca.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -18,6 +22,8 @@ import java.util.stream.Collectors;
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PrestamoRepository prestamoRepository;
+    private final MultaRepository multaRepository;
 
     @Override
     @Transactional
@@ -57,10 +63,23 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public UsuarioResponseDTO obtenerUsuarioPorEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email));
+        return convertirAResponseDTO(usuario);
+    }
+
+    @Override
     public List<UsuarioResponseDTO> listarTodosLosUsuarios() {
         return usuarioRepository.findAll().stream()
                 .map(this::convertirAResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<UsuarioResponseDTO> listarUsuariosPaginados(Pageable pageable) {
+        return usuarioRepository.findAll(pageable)
+                .map(this::convertirAResponseDTO);
     }
 
     @Override
@@ -106,7 +125,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public UsuarioResponseDTO suspenderUsuario(Long id) {
+    public UsuarioResponseDTO suspenderUsuario(Long id, String motivo) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
 
@@ -128,7 +147,64 @@ public class UsuarioServiceImpl implements UsuarioService {
         return convertirAResponseDTO(usuarioActualizado);
     }
 
-    // Método helper para convertir Entity a DTO
+    @Override
+    public List<UsuarioResponseDTO> buscarUsuariosPorNombre(String nombre) {
+        return usuarioRepository.findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(nombre, nombre)
+                .stream()
+                .map(this::convertirAResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UsuarioResponseDTO> listarUsuariosConPrestamosActivos() {
+        return usuarioRepository.findUsuariosConPrestamosActivos().stream()
+                .map(this::convertirAResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UsuarioResponseDTO> listarUsuariosConMultasPendientes() {
+        return usuarioRepository.findUsuariosConMultasPendientes().stream()
+                .map(this::convertirAResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean existePorEmail(String email) {
+        return usuarioRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existePorNumeroIdentificacion(String numeroIdentificacion) {
+        return usuarioRepository.existsByNumeroIdentificacion(numeroIdentificacion);
+    }
+
+    @Override
+    public boolean puedeRealizarPrestamo(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + usuarioId));
+
+        // Verificar estado activo
+        if (usuario.getEstado() != EstadoUsuario.ACTIVO) {
+            return false;
+        }
+
+        // Verificar multas pendientes
+        Long multasPendientes = multaRepository.contarMultasPendientesPorUsuario(usuarioId);
+        if (multasPendientes > 0) {
+            return false;
+        }
+
+        // Verificar límite de préstamos activos
+        Long prestamosActivos = prestamoRepository.contarPrestamosActivosPorUsuario(usuarioId);
+        if (prestamosActivos >= 3) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // Método helper para conversión
     private UsuarioResponseDTO convertirAResponseDTO(Usuario usuario) {
         UsuarioResponseDTO dto = new UsuarioResponseDTO();
         dto.setId(usuario.getId());
