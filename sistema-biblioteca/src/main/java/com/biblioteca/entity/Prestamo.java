@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "prestamos")
@@ -45,6 +47,10 @@ public class Prestamo {
 
     @Column(precision = 10, scale = 2)
     private BigDecimal multa;
+
+    // Relación One-to-Many con Multa
+    @OneToMany(mappedBy = "prestamo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Multa> multas = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

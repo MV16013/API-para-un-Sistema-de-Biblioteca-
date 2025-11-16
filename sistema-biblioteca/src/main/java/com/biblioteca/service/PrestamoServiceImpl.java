@@ -6,17 +6,20 @@ import com.biblioteca.dto.prestamo.PrestamoSimpleResponseDTO;
 import com.biblioteca.dto.usuario.UsuarioResponseDTO;
 import com.biblioteca.dto.libro.LibroResponseDTO;
 import com.biblioteca.entity.Libro;
+import com.biblioteca.entity.Multa;
 import com.biblioteca.entity.Prestamo;
 import com.biblioteca.entity.Usuario;
 import com.biblioteca.enums.EstadoPrestamo;
 import com.biblioteca.enums.EstadoUsuario;
 import com.biblioteca.exception.ResourceNotFoundException;
 import com.biblioteca.repository.LibroRepository;
+import com.biblioteca.repository.MultaRepository;
 import com.biblioteca.repository.PrestamoRepository;
 import com.biblioteca.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +31,7 @@ public class PrestamoServiceImpl implements PrestamoService {
     private final PrestamoRepository prestamoRepository;
     private final UsuarioRepository usuarioRepository;
     private final LibroRepository libroRepository;
+    private final MultaRepository multaRepository;
     private final UsuarioService usuarioService;
     private final LibroService libroService;
 
@@ -57,14 +61,23 @@ public class PrestamoServiceImpl implements PrestamoService {
                             ", Stock disponible: " + libro.getStockDisponible());
         }
 
-        // 5. Validar cantidad de préstamos activos (máximo 3)
+        // 5. Validar que no tenga multas pendientes
+        Long multasPendientes = multaRepository.contarMultasPendientesPorUsuario(usuario.getId());
+        if (multasPendientes > 0) {
+            BigDecimal totalMultas = multaRepository.calcularTotalMultasPendientes(usuario.getId());
+            throw new IllegalArgumentException(
+                    "El usuario tiene " + multasPendientes + " multa(s) pendiente(s) por un total de $" +
+                            totalMultas + ". Debe pagarlas antes de realizar un préstamo.");
+        }
+
+        // 6. Validar cantidad de préstamos activos (máximo 3)
         Long prestamosActivos = prestamoRepository.contarPrestamosActivosPorUsuario(usuario.getId());
         if (prestamosActivos >= 3) {
             throw new IllegalArgumentException(
                     "El usuario ya tiene el máximo de préstamos activos permitidos (3)");
         }
 
-        // 6. Crear el préstamo
+        // 7. Crear el préstamo
         Prestamo prestamo = new Prestamo();
         prestamo.setUsuario(usuario);
         prestamo.setLibro(libro);
@@ -72,11 +85,11 @@ public class PrestamoServiceImpl implements PrestamoService {
                 LocalDateTime.now().plusDays(dto.getDiasPrestamo()));
         prestamo.setObservaciones(dto.getObservaciones());
 
-        // 7. Reducir stock del libro
+        // 8. Reducir stock del libro
         libro.reducirStock();
         libroRepository.save(libro);
 
-        // 8. Guardar préstamo
+        // 9. Guardar préstamo
         Prestamo prestamoGuardado = prestamoRepository.save(prestamo);
 
         return convertirASimpleResponseDTO(prestamoGuardado);
@@ -106,13 +119,104 @@ public class PrestamoServiceImpl implements PrestamoService {
     }
 
     @Override
+    @Transactional
+    public PrestamoSimpleResponseDTO devolverLibro(Long prestamoId, String observaciones) {
+        Prestamo prestamo = prestamoRepository.findById(prestamoId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Préstamo no encontrado con id: " + prestamoId));
+
+        // Validar que el préstamo está activo
+        if (prestamo.getEstado() != EstadoPrestamo.ACTIVO) {
+            throw new IllegalArgumentException(
+                    "El préstamo no está activo. Estado: " + prestamo.getEstado());
+        }
+
+        // Marcar como devuelto y calcular multa
+        prestamo.marcarComoDevuelto();
+
+        // Aumentar stock del libro
+        Libro libro = prestamo.getLibro();
+        libro.aumentarStock();
+        libroRepository.save(libro);
+
+        // Generar multa si hay retraso
+        if (prestamo.getMulta().compareTo(BigDecimal.ZERO) > 0) {
+            Multa multa = new Multa();
+            multa.setUsuario(prestamo.getUsuario());
+            multa.setPrestamo(prestamo);
+            multa.setMonto(prestamo.getMulta());
+            multa.setConcepto("Multa por retraso de " + prestamo.calcularDiasRetraso() +
+                    " días en devolución de: " + libro.getTitulo());
+            multaRepository.save(multa);
+        }
+
+        // Agregar observaciones de devolución
+        if (observaciones != null && !observaciones.isBlank()) {
+            String obsActuales = prestamo.getObservaciones() != null ?
+                    prestamo.getObservaciones() + " | " : "";
+            prestamo.setObservaciones(obsActuales + "Devolución: " + observaciones);
+        }
+
+        // Actualizar estado si está vencido
+        if (prestamo.getMulta().compareTo(BigDecimal.ZERO) > 0) {
+            prestamo.setEstado(EstadoPrestamo.VENCIDO);
+        }
+
+        Prestamo prestamoActualizado = prestamoRepository.save(prestamo);
+
+        return convertirASimpleResponseDTO(prestamoActualizado);
+    }
+
+    @Override
+    @Transactional
+    public PrestamoSimpleResponseDTO renovarPrestamo(Long prestamoId) {
+        Prestamo prestamo = prestamoRepository.findById(prestamoId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Préstamo no encontrado con id: " + prestamoId));
+
+        // Validar que el préstamo está activo
+        if (prestamo.getEstado() != EstadoPrestamo.ACTIVO) {
+            throw new IllegalArgumentException(
+                    "Solo se pueden renovar préstamos activos. Estado actual: " + prestamo.getEstado());
+        }
+
+        // Validar que no está vencido
+        if (prestamo.estaVencido()) {
+            throw new IllegalArgumentException(
+                    "No se puede renovar un préstamo vencido. Días de retraso: " + prestamo.calcularDiasRetraso());
+        }
+
+        // Extender fecha de devolución por 7 días más
+        prestamo.setFechaDevolucionPrevista(prestamo.getFechaDevolucionPrevista().plusDays(7));
+        prestamo.setEstado(EstadoPrestamo.RENOVADO);
+
+        String obsActuales = prestamo.getObservaciones() != null ?
+                prestamo.getObservaciones() + " | " : "";
+        prestamo.setObservaciones(obsActuales + "Renovado el " + LocalDateTime.now());
+
+        Prestamo prestamoRenovado = prestamoRepository.save(prestamo);
+
+        return convertirASimpleResponseDTO(prestamoRenovado);
+    }
+
+    @Override
     public List<PrestamoSimpleResponseDTO> listarPrestamosPorUsuario(Long usuarioId) {
-        // Validar que el usuario existe
         if (!usuarioRepository.existsById(usuarioId)) {
             throw new ResourceNotFoundException("Usuario no encontrado con id: " + usuarioId);
         }
 
         return prestamoRepository.findByUsuarioId(usuarioId).stream()
+                .map(this::convertirASimpleResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PrestamoSimpleResponseDTO> listarPrestamosPorLibro(Long libroId) {
+        if (!libroRepository.existsById(libroId)) {
+            throw new ResourceNotFoundException("Libro no encontrado con id: " + libroId);
+        }
+
+        return prestamoRepository.findByLibroId(libroId).stream()
                 .map(this::convertirASimpleResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -132,41 +236,13 @@ public class PrestamoServiceImpl implements PrestamoService {
     }
 
     @Override
-    @Transactional
-    public PrestamoSimpleResponseDTO devolverLibro(Long prestamoId, String observaciones) {
-        Prestamo prestamo = prestamoRepository.findById(prestamoId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Préstamo no encontrado con id: " + prestamoId));
+    public List<PrestamoSimpleResponseDTO> listarPrestamosProximosAVencer(Integer dias) {
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime limite = ahora.plusDays(dias);
 
-        // Validar que el préstamo está activo
-        if (prestamo.getEstado() != EstadoPrestamo.ACTIVO) {
-            throw new IllegalArgumentException(
-                    "El préstamo no está activo. Estado: " + prestamo.getEstado());
-        }
-
-        // Marcar como devuelto
-        prestamo.marcarComoDevuelto();
-
-        // Aumentar stock del libro
-        Libro libro = prestamo.getLibro();
-        libro.aumentarStock();
-        libroRepository.save(libro);
-
-        // Agregar observaciones de devolución
-        if (observaciones != null && !observaciones.isBlank()) {
-            String obsActuales = prestamo.getObservaciones() != null ?
-                    prestamo.getObservaciones() + " | " : "";
-            prestamo.setObservaciones(obsActuales + "Devolución: " + observaciones);
-        }
-
-        // Actualizar estado si está vencido
-        if (prestamo.getMulta().compareTo(java.math.BigDecimal.ZERO) > 0) {
-            prestamo.setEstado(EstadoPrestamo.VENCIDO);
-        }
-
-        Prestamo prestamoActualizado = prestamoRepository.save(prestamo);
-
-        return convertirASimpleResponseDTO(prestamoActualizado);
+        return prestamoRepository.findPrestamosProximosAVencer(ahora, limite).stream()
+                .map(this::convertirASimpleResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -178,7 +254,7 @@ public class PrestamoServiceImpl implements PrestamoService {
         prestamoRepository.deleteById(id);
     }
 
-    // ==================== MÉTODOS HELPER DE CONVERSIÓN ====================
+    // Métodos helper para conversión
 
     private PrestamoResponseDTO convertirAResponseDTO(Prestamo prestamo) {
         PrestamoResponseDTO dto = new PrestamoResponseDTO();
@@ -209,18 +285,11 @@ public class PrestamoServiceImpl implements PrestamoService {
     private PrestamoSimpleResponseDTO convertirASimpleResponseDTO(Prestamo prestamo) {
         PrestamoSimpleResponseDTO dto = new PrestamoSimpleResponseDTO();
         dto.setId(prestamo.getId());
-
-        // Datos del usuario
         dto.setUsuarioId(prestamo.getUsuario().getId());
         dto.setUsuarioNombre(prestamo.getUsuario().getNombreCompleto());
-
-        // Datos del libro
         dto.setLibroId(prestamo.getLibro().getId());
         dto.setLibroTitulo(prestamo.getLibro().getTitulo());
-        dto.setLibroAutor(prestamo.getLibro().getAutor());
         dto.setLibroIsbn(prestamo.getLibro().getIsbn());
-
-        // Datos del préstamo
         dto.setFechaPrestamo(prestamo.getFechaPrestamo());
         dto.setFechaDevolucionPrevista(prestamo.getFechaDevolucionPrevista());
         dto.setFechaDevolucionReal(prestamo.getFechaDevolucionReal());

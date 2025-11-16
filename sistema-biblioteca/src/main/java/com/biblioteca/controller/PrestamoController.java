@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/prestamos")
@@ -20,8 +19,7 @@ public class PrestamoController {
     private final PrestamoService prestamoService;
 
     @PostMapping
-    public ResponseEntity<PrestamoSimpleResponseDTO> crearPrestamo(
-            @Valid @RequestBody PrestamoCreateDTO dto) {
+    public ResponseEntity<PrestamoSimpleResponseDTO> crearPrestamo(@Valid @RequestBody PrestamoCreateDTO dto) {
         PrestamoSimpleResponseDTO prestamo = prestamoService.crearPrestamo(dto);
         return new ResponseEntity<>(prestamo, HttpStatus.CREATED);
     }
@@ -45,10 +43,14 @@ public class PrestamoController {
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<PrestamoSimpleResponseDTO>> listarPrestamosPorUsuario(
-            @PathVariable Long usuarioId) {
-        List<PrestamoSimpleResponseDTO> prestamos =
-                prestamoService.listarPrestamosPorUsuario(usuarioId);
+    public ResponseEntity<List<PrestamoSimpleResponseDTO>> listarPrestamosPorUsuario(@PathVariable Long usuarioId) {
+        List<PrestamoSimpleResponseDTO> prestamos = prestamoService.listarPrestamosPorUsuario(usuarioId);
+        return ResponseEntity.ok(prestamos);
+    }
+
+    @GetMapping("/libro/{libroId}")
+    public ResponseEntity<List<PrestamoSimpleResponseDTO>> listarPrestamosPorLibro(@PathVariable Long libroId) {
+        List<PrestamoSimpleResponseDTO> prestamos = prestamoService.listarPrestamosPorLibro(libroId);
         return ResponseEntity.ok(prestamos);
     }
 
@@ -64,12 +66,24 @@ public class PrestamoController {
         return ResponseEntity.ok(prestamos);
     }
 
+    @GetMapping("/proximos-vencer")
+    public ResponseEntity<List<PrestamoSimpleResponseDTO>> listarPrestamosProximosAVencer(
+            @RequestParam(defaultValue = "3") Integer dias) {
+        List<PrestamoSimpleResponseDTO> prestamos = prestamoService.listarPrestamosProximosAVencer(dias);
+        return ResponseEntity.ok(prestamos);
+    }
+
     @PatchMapping("/{id}/devolver")
     public ResponseEntity<PrestamoSimpleResponseDTO> devolverLibro(
             @PathVariable Long id,
-            @RequestBody(required = false) Map<String, String> body) {
-        String observaciones = body != null ? body.get("observaciones") : null;
+            @RequestParam(required = false) String observaciones) {
         PrestamoSimpleResponseDTO prestamo = prestamoService.devolverLibro(id, observaciones);
+        return ResponseEntity.ok(prestamo);
+    }
+
+    @PatchMapping("/{id}/renovar")
+    public ResponseEntity<PrestamoSimpleResponseDTO> renovarPrestamo(@PathVariable Long id) {
+        PrestamoSimpleResponseDTO prestamo = prestamoService.renovarPrestamo(id);
         return ResponseEntity.ok(prestamo);
     }
 

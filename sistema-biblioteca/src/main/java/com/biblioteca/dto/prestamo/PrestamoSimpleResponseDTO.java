@@ -16,7 +16,6 @@ public class PrestamoSimpleResponseDTO {
     private String usuarioNombre;
     private Long libroId;
     private String libroTitulo;
-    private String libroAutor;
     private String libroIsbn;
     private LocalDateTime fechaPrestamo;
     private LocalDateTime fechaDevolucionPrevista;

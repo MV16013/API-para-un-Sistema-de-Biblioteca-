@@ -28,6 +28,7 @@ public class UsuarioCreateDTO {
 
     @NotBlank(message = "El email es obligatorio")
     @Email(message = "Debe proporcionar un email válido")
+    @Size(max = 150, message = "El email no puede exceder 150 caracteres")
     private String email;
 
     @Size(max = 20, message = "El teléfono no puede exceder 20 caracteres")
