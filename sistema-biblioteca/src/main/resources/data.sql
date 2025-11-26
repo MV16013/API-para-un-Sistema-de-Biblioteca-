@@ -1,7 +1,7 @@
 -- =====================================================
 -- DATA.SQL - DATOS DE PRUEBA PARA SISTEMA BIBLIOTECA
 -- =====================================================
-
+SET search_path TO public;--para crear las tablas antes de insertar registros
 -- INSERTAR AUTORES
 INSERT INTO autores (nombre, apellido, nacionalidad, fecha_nacimiento, biografia, fecha_registro) VALUES
 ('Gabriel', 'García Márquez', 'Colombiana', '1927-03-06', 'Escritor colombiano, ganador del Premio Nobel de Literatura en 1982. Autor de "Cien años de soledad".', CURRENT_TIMESTAMP),
