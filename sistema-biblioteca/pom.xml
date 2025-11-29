@@ -6,7 +6,8 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.7</version>
-        <relativePath/> </parent>
+        <relativePath/>
+    </parent>
     <groupId>com.biblioteca</groupId>
     <artifactId>sistema-biblioteca</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -59,9 +60,16 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- DEPENDENCIAS PARA PRUEBAS -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -94,5 +102,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
